@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { RecipeBook } from './components/RecipeBook';
 import { PaymentGateway } from './components/PaymentGateway'; // Import Payment Gateway
@@ -145,19 +144,31 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Check payment status on mount
-    const hasPaid = localStorage.getItem('orix_paid') === 'true';
-    const storedCredits = parseInt(localStorage.getItem('orix_credits') || '0', 10);
-    const storedHistory = JSON.parse(localStorage.getItem('orix_recipe_history') || '[]');
-    
-    setIsPaid(hasPaid);
-    setCredits(storedCredits);
-    setHistory(storedHistory);
+    try {
+        // Safe initialization with error handling for localStorage
+        const hasPaid = localStorage.getItem('orix_paid') === 'true';
+        const storedCredits = parseInt(localStorage.getItem('orix_credits') || '0', 10);
+        
+        let storedHistory: FoodAnalysis[] = [];
+        try {
+            storedHistory = JSON.parse(localStorage.getItem('orix_recipe_history') || '[]');
+        } catch (e) {
+            console.error("History corrupted, resetting", e);
+            localStorage.removeItem('orix_recipe_history');
+        }
+        
+        setIsPaid(hasPaid);
+        setCredits(isNaN(storedCredits) ? 0 : storedCredits);
+        setHistory(Array.isArray(storedHistory) ? storedHistory : []);
 
-    if (hasPaid || storedCredits > 0) {
-        setMode('onboarding');
-    } else {
-        setMode('payment');
+        if (hasPaid || storedCredits > 0) {
+            setMode('onboarding');
+        } else {
+            setMode('payment');
+        }
+    } catch (error) {
+        console.error("Initialization error", error);
+        setMode('payment'); // Fallback
     }
   }, []);
 
@@ -276,9 +287,8 @@ export default function App() {
     const parts = analysis.imageUri.split(',');
     if (parts.length < 2) return;
     
-    const header = parts[0];
     const base64Data = parts[1];
-    const mimeType = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const mimeType = parts[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
     
     setLoading(true);
     

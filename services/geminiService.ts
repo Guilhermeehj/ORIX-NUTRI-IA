@@ -79,14 +79,21 @@ export const analyzeFoodImage = async (base64Image: string, mimeType: string, us
       throw new Error("O sistema não retornou dados de análise.");
     }
 
-    // Sanitize response: remove markdown code blocks if present (e.g. ```json ... ```)
-    const cleanJson = textResponse.replace(/^```json\s*/, "").replace(/^```\s*/, "").replace(/```\s*$/, "").trim();
+    // ROBUST JSON EXTRACTION: Finds the first '{' and last '}' to ignore any markdown or extra text
+    const startIndex = textResponse.indexOf('{');
+    const endIndex = textResponse.lastIndexOf('}');
+    
+    if (startIndex === -1 || endIndex === -1) {
+       throw new Error("Formato de resposta inválido da IA.");
+    }
+
+    const jsonString = textResponse.substring(startIndex, endIndex + 1);
 
     try {
-      return JSON.parse(cleanJson);
+      return JSON.parse(jsonString);
     } catch (parseError) {
-      console.error("Failed to parse JSON:", cleanJson);
-      throw new Error("Erro ao processar dados da análise.");
+      console.error("Failed to parse JSON:", jsonString);
+      throw new Error("Erro de sintaxe nos dados da análise.");
     }
   } catch (error) {
     console.error("Erro ao analisar imagem:", error);

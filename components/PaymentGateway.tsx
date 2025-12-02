@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 interface PaymentGatewayProps {
@@ -80,22 +79,31 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
 
   const checkTrialDuplication = (email: string, phone: string) => {
       try {
-          const registeredUsers = JSON.parse(localStorage.getItem('orix_registered_users') || '[]');
+          const stored = localStorage.getItem('orix_registered_users');
+          const registeredUsers = stored ? JSON.parse(stored) : [];
+          
+          if (!Array.isArray(registeredUsers)) return false;
+
           // Clean phone for comparison
           const cleanPhone = phone.replace(/\D/g, '');
           
           return registeredUsers.some((user: any) => 
-              user.email.toLowerCase() === email.toLowerCase() || 
-              user.phone === cleanPhone
+              (user?.email && user.email.toLowerCase() === email.toLowerCase()) || 
+              (user?.phone && user.phone === cleanPhone)
           );
       } catch (e) {
+          console.error("Duplication check error", e);
           return false;
       }
   };
 
   const registerTrialUser = (email: string, phone: string, name: string) => {
       try {
-          const registeredUsers = JSON.parse(localStorage.getItem('orix_registered_users') || '[]');
+          const stored = localStorage.getItem('orix_registered_users');
+          const registeredUsers = stored ? JSON.parse(stored) : [];
+          
+          if (!Array.isArray(registeredUsers)) return; // Should not happen given init logic above but safe
+
           const cleanPhone = phone.replace(/\D/g, '');
           registeredUsers.push({
               email: email.toLowerCase(),
