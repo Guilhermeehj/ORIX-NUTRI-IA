@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Recipe, FoodAnalysis, ChatMessage, DisplayMode } from '../types';
 
@@ -23,7 +22,7 @@ const parseValue = (str: string): number => {
   return match ? parseFloat(match[0]) : 0;
 };
 
-// Internal Component: Tech Donut Chart
+// Internal Component: Tech Donut Chart (Static)
 const MacroChart = ({ analysis }: { analysis: FoodAnalysis }) => {
   const calories = parseValue(analysis.nutritionalInfo.calories);
   const protein = parseValue(analysis.nutritionalInfo.protein);
@@ -59,8 +58,8 @@ const MacroChart = ({ analysis }: { analysis: FoodAnalysis }) => {
   return (
     <div className="flex flex-col items-center justify-center p-4 relative">
       <div className="relative w-48 h-48 md:w-56 md:h-56">
-        {/* Glow Effects */}
-        <div className="absolute inset-0 bg-orix-blue/10 rounded-full blur-xl animate-pulse"></div>
+        {/* Glow Effects (Static) */}
+        <div className="absolute inset-0 bg-orix-blue/10 rounded-full blur-xl"></div>
         
         <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
           {/* Background Track */}
@@ -74,7 +73,7 @@ const MacroChart = ({ analysis }: { analysis: FoodAnalysis }) => {
             strokeWidth="8" 
             strokeDasharray={dashProtein}
             strokeDashoffset="0"
-            className="drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all duration-1000 ease-out"
+            className="drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
           />
 
           {/* Carbs Segment (Blue) */}
@@ -88,7 +87,7 @@ const MacroChart = ({ analysis }: { analysis: FoodAnalysis }) => {
             strokeWidth="8" 
             strokeDasharray={dashCarbs}
             strokeDashoffset="0"
-            className="drop-shadow-[0_0_8px_rgba(59,130,246,0.8)] transition-all duration-1000 ease-out"
+            className="drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]"
           />
         </svg>
 
@@ -100,7 +99,7 @@ const MacroChart = ({ analysis }: { analysis: FoodAnalysis }) => {
             strokeWidth="8" 
             strokeDasharray={dashFat}
             strokeDashoffset="0"
-            className="drop-shadow-[0_0_8px_rgba(148,163,184,0.8)] transition-all duration-1000 ease-out"
+            className="drop-shadow-[0_0_8px_rgba(148,163,184,0.8)]"
           />
         </svg>
 
@@ -156,22 +155,19 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
     const title = analysis.suggestedRecipe.title;
     const prompt = encodeURIComponent(`Professional food photography of ${title}, ${keywords}, cinematic lighting, 8k resolution, appetizing, highly detailed, photorealistic`);
     
-    // Using Pollinations AI (No API Key needed for frontend demo)
     const url = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000)}`;
     
-    // Simulate slight loading feel and set URL
     setTimeout(() => {
         setGeneratedImgUrl(url);
         setIsGeneratingImg(false);
     }, 1500);
   };
 
-  // --- LOADING STATE ---
   if (loading) {
     return (
       <div className="w-full max-w-4xl mx-auto h-[400px] glass-panel rounded-3xl p-8 flex flex-col items-center justify-center border border-orix-blue/30 shadow-neon-blue">
         <div className="relative">
-           <div className="absolute inset-0 bg-orix-blue/20 rounded-full animate-ping"></div>
+           <div className="absolute inset-0 bg-orix-blue/20 rounded-full"></div>
            <div className="w-24 h-24 bg-gradient-to-tr from-orix-blue to-orix-cyan rounded-full flex items-center justify-center text-white relative z-10 shadow-neon-blue border-2 border-white/20">
              <div className="w-20 h-20 rounded-full bg-orix-dark flex items-center justify-center">
                 <svg className="w-10 h-10 text-orix-cyan animate-spin" fill="none" viewBox="0 0 24 24">
@@ -181,18 +177,17 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
              </div>
            </div>
         </div>
-        <p className="mt-8 text-orix-cyan font-mono uppercase tracking-widest text-sm animate-pulse">Processando dados ORIX AI...</p>
+        <p className="mt-8 text-orix-cyan font-mono uppercase tracking-widest text-sm">Processando dados ORIX AI...</p>
       </div>
     );
   }
 
-  // --- WELCOME STATE ---
   if (mode === 'welcome') {
     return (
       <div className="w-full max-w-4xl mx-auto text-center mt-8">
         <div className="inline-block p-1 rounded-full bg-gradient-to-r from-orix-blue to-orix-silver shadow-neon-blue mb-8">
             <div className="bg-orix-dark rounded-full p-6">
-                <span className="text-6xl animate-pulse block grayscale-0">💠</span>
+                <span className="text-6xl block grayscale-0">💠</span>
             </div>
         </div>
         <h2 className="text-5xl font-sans font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-orix-silver to-white mb-6 tracking-wide drop-shadow-lg">
@@ -205,7 +200,6 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
     );
   }
 
-  // --- ANALYSIS / RECIPE STATE ---
   if (analysis) {
     return (
       <div id="printable-book" className="w-full max-w-4xl mx-auto space-y-8 pb-20">
@@ -215,7 +209,7 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
              {/* Header */}
              <div className="bg-orix-dark/50 p-4 border-b border-orix-blue/10 flex justify-between items-center">
                  <div className="flex items-center gap-2">
-                     <span className="w-2 h-2 rounded-full bg-orix-cyan animate-pulse"></span>
+                     <span className="w-2 h-2 rounded-full bg-orix-cyan"></span>
                      <span className="text-orix-cyan font-mono text-xs tracking-widest uppercase">Análise em Tempo Real</span>
                  </div>
                  <span className="text-orix-silver font-mono text-xs">{new Date().toLocaleTimeString()}</span>
@@ -225,7 +219,7 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
                  {/* Left: Image & Description */}
                  <div className="p-6 md:p-8 border-b md:border-b-0 md:border-r border-orix-blue/10">
                      <div className="relative w-full h-64 rounded-2xl overflow-hidden border border-orix-blue/30 shadow-lg mb-6 group">
-                         <img src={analysis.imageUri} alt="Food Analysis" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                         <img src={analysis.imageUri} alt="Food Analysis" className="w-full h-full object-cover" />
                          <div className="absolute inset-0 bg-gradient-to-t from-orix-dark via-transparent to-transparent opacity-60"></div>
                          <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-lg border border-orix-cyan/30">
                              <span className="text-orix-cyan text-xs font-mono font-bold uppercase">Input Visual</span>
@@ -341,7 +335,7 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
                                     </>
                                 ) : (
                                     <>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                                         </svg>
                                         <span className="font-mono text-sm uppercase tracking-wider font-bold">Gerar Imagem Ilustrativa</span>
@@ -349,7 +343,7 @@ export const RecipeBook: React.FC<RecipeBookProps> = ({ mode, recipe, analysis, 
                                 )}
                              </button>
                         ) : (
-                            <div className="relative w-full h-64 sm:h-80 rounded-2xl overflow-hidden border border-orix-cyan/50 shadow-[0_0_20px_rgba(6,182,212,0.3)] animate-in fade-in zoom-in-95 duration-700 group">
+                            <div className="relative w-full h-64 sm:h-80 rounded-2xl overflow-hidden border border-orix-cyan/50 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
                                 <img src={generatedImgUrl} alt="Generated Dish" className="w-full h-full object-cover" />
                                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4">
                                     <span className="text-orix-cyan text-xs font-mono uppercase tracking-widest border border-orix-cyan/30 px-2 py-1 rounded bg-black/40 backdrop-blur">

@@ -69,24 +69,18 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
 
   const handlePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, '').substring(0, 11);
-    // Mask: (XX) XXXXX-XXXX or (XX) XXXX-XXXX
     if (val.length > 2) val = `(${val.substring(0,2)}) ${val.substring(2)}`;
-    if (val.length > 9) val = `${val.substring(0,9)}-${val.substring(9)}`; // (XX) XXXXX-XXXX
+    if (val.length > 9) val = `${val.substring(0,9)}-${val.substring(9)}`;
     setRegPhone(val);
   };
 
   // --- LOGIC ---
-
   const checkTrialDuplication = (email: string, phone: string) => {
       try {
           const stored = localStorage.getItem('orix_registered_users');
           const registeredUsers = stored ? JSON.parse(stored) : [];
-          
           if (!Array.isArray(registeredUsers)) return false;
-
-          // Clean phone for comparison
           const cleanPhone = phone.replace(/\D/g, '');
-          
           return registeredUsers.some((user: any) => 
               (user?.email && user.email.toLowerCase() === email.toLowerCase()) || 
               (user?.phone && user.phone === cleanPhone)
@@ -101,9 +95,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
       try {
           const stored = localStorage.getItem('orix_registered_users');
           const registeredUsers = stored ? JSON.parse(stored) : [];
-          
-          if (!Array.isArray(registeredUsers)) return; // Should not happen given init logic above but safe
-
+          if (!Array.isArray(registeredUsers)) return;
           const cleanPhone = phone.replace(/\D/g, '');
           registeredUsers.push({
               email: email.toLowerCase(),
@@ -121,12 +113,11 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
       e.preventDefault();
       setError(null);
 
-      // 1. Basic Validation
       if (!regName.trim() || !regSurname.trim()) {
           setError("Nome e Sobrenome são obrigatórios.");
           return;
       }
-      if (regPhone.length < 14) { // (XX) XXXXX-XXXX is approx 15 chars
+      if (regPhone.length < 14) {
           setError("Telefone inválido.");
           return;
       }
@@ -135,13 +126,11 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
           return;
       }
 
-      // 2. Code Validation
       if (ticketCode.toUpperCase() !== '08G') {
           setError("Código inválido ou expirado.");
           return;
       }
 
-      // 3. Duplication Check (Backend Simulation)
       if (checkTrialDuplication(regEmail, regPhone)) {
           setError("ERRO: Este E-mail ou Telefone já utilizou o cupom de teste gratuito anteriormente.");
           return;
@@ -150,13 +139,11 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
       setIsProcessing(true);
       
       setTimeout(() => {
-          // Register User
           registerTrialUser(regEmail, regPhone, `${regName} ${regSurname}`);
-          
           setIsTrialSuccess(true);
           setSuccess(true);
           setTimeout(() => {
-              onPaymentSuccess(true); // TRUE indicates Trial Mode
+              onPaymentSuccess(true);
           }, 2000);
       }, 1500);
   };
@@ -166,7 +153,6 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
     setError(null);
     setIsProcessing(true);
 
-    // Validation
     const cleanCard = cardNumber.replace(/\s/g, '');
     
     if (cleanCard.length < 13 || !luhnCheck(cleanCard)) {
@@ -187,23 +173,19 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
         return;
     }
 
-    // Simulate Processing Delay
     await new Promise(resolve => setTimeout(resolve, 2500));
     
-    console.log("Processando pagamento de R$ 29,99...");
-    console.log("Iniciando transferência automática para PIX: (24)999241876");
-
     setIsTrialSuccess(false);
     setSuccess(true);
     
     setTimeout(() => {
-        onPaymentSuccess(false); // FALSE indicates Full Payment (Not Trial)
+        onPaymentSuccess(false);
     }, 2000);
   };
 
   if (success) {
     return (
-        <div className="w-full max-w-md mx-auto glass-panel p-8 rounded-3xl border border-orix-blue shadow-neon-blue flex flex-col items-center justify-center text-center animate-in zoom-in-95">
+        <div className="w-full max-w-md mx-auto glass-panel p-8 rounded-3xl border border-orix-blue shadow-neon-blue flex flex-col items-center justify-center text-center">
              <div className="w-20 h-20 rounded-full bg-orix-blue/20 flex items-center justify-center mb-6">
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10 text-orix-cyan">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -221,13 +203,13 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
                     <p className="text-white font-bold">R$ 29,99 &rarr; PIX (24)9...876</p>
                 </div>
              )}
-             <p className="text-xs text-orix-silver animate-pulse">Iniciando sistema...</p>
+             <p className="text-xs text-orix-silver">Iniciando sistema...</p>
         </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md mx-auto animate-in slide-in-from-bottom-10 duration-700">
+    <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
          <div className="inline-block p-1 rounded-full bg-gradient-to-r from-orix-blue to-orix-silver shadow-neon-blue mb-4">
             <div className="bg-orix-dark rounded-full p-3">
@@ -239,10 +221,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
       </div>
 
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-orix-blue/30 shadow-lg relative overflow-hidden">
-         {/* Background Decoration */}
          <div className="absolute top-0 right-0 w-32 h-32 bg-orix-blue/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
-         {/* Ticket Toggle Button */}
          <div className="absolute top-4 right-4 z-20">
              <button 
                 onClick={() => setShowTicketInput(!showTicketInput)} 
@@ -257,7 +237,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
          </div>
 
          {showTicketInput ? (
-             <div className="mb-6 animate-in slide-in-from-top-2 pt-6">
+             <div className="mb-6 pt-6">
                  <div className="bg-orix-blue/10 border border-orix-blue/30 p-4 rounded-xl mb-4">
                     <p className="text-sm text-orix-cyan mb-2 font-bold">REGISTRO DE TESTE GRATUITO</p>
                     <p className="text-xs text-orix-silver">Preencha seus dados para ativar o cupom.</p>
@@ -345,11 +325,6 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onPaymentSuccess
                             placeholder="0000 0000 0000 0000"
                             className="w-full bg-orix-dark/60 border border-orix-silver/20 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:border-orix-cyan focus:ring-1 focus:ring-orix-cyan outline-none transition-all font-mono"
                         />
-                        <div className="absolute right-3 top-3 text-orix-silver/50">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                            </svg>
-                        </div>
                     </div>
                 </div>
 

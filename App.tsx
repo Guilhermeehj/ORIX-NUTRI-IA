@@ -43,7 +43,7 @@ const TargetIcon = () => (
     </svg>
 );
 
-// --- FUTURISTIC LOADER COMPONENT ---
+// --- FUTURISTIC LOADER COMPONENT (Static Version) ---
 const AnalysisLoader = () => {
     const [progress, setProgress] = useState(0);
     const [messageIndex, setMessageIndex] = useState(0);
@@ -61,7 +61,6 @@ const AnalysisLoader = () => {
         const interval = setInterval(() => {
             setProgress((prev) => {
                 if (prev >= 99) return 99;
-                // Random increments to look like real processing
                 return prev + Math.floor(Math.random() * 3) + 1; 
             });
         }, 80);
@@ -80,7 +79,7 @@ const AnalysisLoader = () => {
     return (
         <div className="w-full max-w-4xl mx-auto min-h-[500px] flex flex-col items-center justify-center relative bg-orix-card/30 backdrop-blur-md rounded-[2rem] border border-orix-blue/20 shadow-neon-blue overflow-hidden">
             
-            {/* Background Grid Animation */}
+            {/* Background Grid */}
             <div className="absolute inset-0 z-0 opacity-20" 
                 style={{backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)', backgroundSize: '20px 20px'}}>
             </div>
@@ -88,20 +87,14 @@ const AnalysisLoader = () => {
             <div className="relative z-10 flex flex-col items-center">
                 {/* Central Spinner Core */}
                 <div className="relative w-48 h-48 mb-10">
-                    {/* Ring 1 - Slow Rotate */}
-                    <div className="absolute inset-0 border-4 border-orix-blue/30 rounded-full animate-[spin_4s_linear_infinite]"></div>
-                    {/* Ring 2 - Fast Rotate Reverse */}
-                    <div className="absolute inset-2 border-t-4 border-l-4 border-orix-cyan rounded-full animate-[spin_2s_linear_infinite_reverse]"></div>
-                    {/* Ring 3 - Pulse */}
-                    <div className="absolute inset-8 bg-orix-blue/10 rounded-full animate-pulse border border-orix-blue/50"></div>
+                    <div className="absolute inset-0 border-4 border-orix-blue/30 rounded-full"></div>
+                    <div className="absolute inset-2 border-t-4 border-l-4 border-orix-cyan rounded-full animate-spin"></div>
+                    <div className="absolute inset-8 bg-orix-blue/10 rounded-full border border-orix-blue/50"></div>
                     
                     {/* Logo/Icon in Center */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                         <span className="text-4xl animate-bounce">💠</span>
+                         <span className="text-4xl">💠</span>
                     </div>
-
-                    {/* Scanning Line */}
-                    <div className="absolute inset-0 w-full h-1 bg-orix-cyan/50 shadow-[0_0_15px_#06b6d4] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] top-1/2"></div>
                 </div>
 
                 {/* Progress Text */}
@@ -111,7 +104,7 @@ const AnalysisLoader = () => {
 
                 {/* Status Message */}
                 <div className="h-8 flex items-center justify-center">
-                    <p className="text-orix-cyan font-mono text-sm tracking-[0.2em] uppercase animate-pulse text-center">
+                    <p className="text-orix-cyan font-mono text-sm tracking-[0.2em] uppercase text-center">
                         {messages[messageIndex]}
                     </p>
                 </div>
@@ -119,7 +112,7 @@ const AnalysisLoader = () => {
                 {/* Progress Bar Visual */}
                 <div className="w-64 h-1 bg-orix-dark mt-6 rounded-full overflow-hidden border border-orix-blue/30 relative">
                     <div 
-                        className="h-full bg-gradient-to-r from-orix-blue to-orix-cyan shadow-[0_0_10px_#3b82f6] transition-all duration-100 ease-out"
+                        className="h-full bg-gradient-to-r from-orix-blue to-orix-cyan shadow-[0_0_10px_#3b82f6]"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
@@ -145,7 +138,6 @@ export default function App() {
 
   useEffect(() => {
     try {
-        // Safe initialization with error handling for localStorage
         const hasPaid = localStorage.getItem('orix_paid') === 'true';
         const storedCredits = parseInt(localStorage.getItem('orix_credits') || '0', 10);
         
@@ -168,12 +160,11 @@ export default function App() {
         }
     } catch (error) {
         console.error("Initialization error", error);
-        setMode('payment'); // Fallback
+        setMode('payment');
     }
   }, []);
 
   const saveToHistory = (newAnalysis: FoodAnalysis) => {
-    // Reduce limit to 5 to prevent LocalStorage Quota Exceeded (Base64 images are large)
     const newHistory = [newAnalysis, ...history].slice(0, 5);
     setHistory(newHistory);
     try {
@@ -181,7 +172,6 @@ export default function App() {
     } catch (e) {
         console.warn("Quota exceeded, trying to save only the latest item");
         try {
-             // Fallback: save only the single newest item if list is too big
              localStorage.setItem('orix_recipe_history', JSON.stringify([newAnalysis]));
         } catch (innerError) {
              console.error("Could not save history to localStorage", innerError);
@@ -191,13 +181,10 @@ export default function App() {
 
   const handlePaymentSuccess = (isTrial: boolean) => {
     if (isTrial) {
-        // Grant 2 credits for trial
         localStorage.setItem('orix_credits', '2');
-        localStorage.setItem('orix_trial_used', 'true'); // MARKS TRIAL AS USED SO IT CAN'T BE USED AGAIN
+        localStorage.setItem('orix_trial_used', 'true');
         setCredits(2);
-        // Do NOT set orix_paid to true
     } else {
-        // Full payment
         localStorage.setItem('orix_paid', 'true');
         setIsPaid(true);
     }
@@ -206,7 +193,7 @@ export default function App() {
 
   const handleGoalSelect = (goal: string) => {
     setUserGoal(goal);
-    setMode('welcome'); // Go to Scanner home
+    setMode('welcome');
   };
 
   const handleCustomGoalSubmit = (e: React.FormEvent) => {
@@ -217,7 +204,7 @@ export default function App() {
   };
 
   const consumeCredit = () => {
-      if (isPaid) return true; // Unlimited
+      if (isPaid) return true;
       if (credits > 0) {
           const newCredits = credits - 1;
           setCredits(newCredits);
@@ -228,7 +215,6 @@ export default function App() {
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Check credits before processing
     if (!isPaid && credits <= 0) {
         alert("Seus créditos acabaram. Realize o pagamento para continuar.");
         setMode('payment');
@@ -241,7 +227,6 @@ export default function App() {
     const reader = new FileReader();
     reader.onloadend = async () => {
         const base64String = reader.result as string;
-        // Ensure we have a valid base64 string
         if (!base64String || !base64String.includes(',')) {
             alert("Erro ao ler o arquivo de imagem.");
             return;
@@ -257,10 +242,7 @@ export default function App() {
 
         try {
             const result = await analyzeFoodImage(base64Data, mimeType, userGoal);
-            
-            // Consume credit ONLY on success
             consumeCredit();
-
             const fullAnalysis: FoodAnalysis = {
                 imageUri: base64String, 
                 timestamp: Date.now(),
@@ -295,12 +277,11 @@ export default function App() {
     try {
         const result = await analyzeFoodImage(base64Data, mimeType, userGoal, correctionText);
         const fullAnalysis: FoodAnalysis = {
-            imageUri: analysis.imageUri, // Keep original image
+            imageUri: analysis.imageUri,
             timestamp: Date.now(),
             ...result
         };
         setAnalysis(fullAnalysis);
-        // Note: We don't save corrections to history to avoid duplicates, but could if desired
     } catch (error) {
         console.error(error);
         alert("Falha ao reprocessar com a correção.");
@@ -347,7 +328,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-orix-dark relative selection:bg-orix-blue selection:text-white text-gray-200 overflow-hidden">
-      {/* Hidden File Input for Camera */}
       <input 
         type="file" 
         accept="image/*" 
@@ -357,9 +337,9 @@ export default function App() {
         className="hidden" 
       />
 
-      {/* Decorative Background Glows */}
+      {/* Static Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 no-print">
-         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-orix-blue/10 rounded-full blur-[120px] animate-pulse"></div>
+         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-orix-blue/10 rounded-full blur-[120px]"></div>
          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-orix-cyan/5 rounded-full blur-[150px]"></div>
          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]"></div>
          <div className="absolute inset-0 opacity-10" 
@@ -367,23 +347,21 @@ export default function App() {
          </div>
       </div>
 
-      {/* Header / Nav */}
       {mode !== 'payment' && (
-        <nav className="w-full bg-orix-dark/80 backdrop-blur-md p-4 sticky top-0 z-40 border-b border-orix-blue/20 shadow-neon-blue animate-in fade-in slide-in-from-top-4 duration-500 no-print">
+        <nav className="w-full bg-orix-dark/80 backdrop-blur-md p-4 sticky top-0 z-40 border-b border-orix-blue/20 shadow-neon-blue no-print">
             <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3 cursor-pointer group" onClick={resetToOnboarding}>
                 <div className="w-10 h-10 rounded-full bg-black border-2 border-orix-blue overflow-hidden shadow-neon-blue relative">
-                    <div className="absolute inset-0 bg-orix-blue/20 animate-pulse"></div>
+                    <div className="absolute inset-0 bg-orix-blue/20"></div>
                     <img src="https://ui-avatars.com/api/?name=Orix&background=020617&color=38bdf8&size=128&bold=true&length=1&rounded=true" alt="ORIX" className="w-full h-full object-cover relative z-10" />
                 </div>
                 <h1 className="text-2xl font-mono font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-orix-blue to-white group-hover:text-orix-cyan transition-colors">ORIX</h1>
             </div>
             
             <div className="flex items-center gap-3">
-                {/* Credit Counter */}
                 {!isPaid && (
                     <div className="px-3 py-1 bg-orix-blue/10 border border-orix-blue/30 rounded-full flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${credits > 0 ? 'bg-orix-cyan animate-pulse' : 'bg-red-500'}`}></span>
+                        <span className={`w-2 h-2 rounded-full ${credits > 0 ? 'bg-orix-cyan' : 'bg-red-500'}`}></span>
                         <span className={`text-xs font-mono tracking-wider ${credits > 0 ? 'text-orix-cyan' : 'text-red-400'}`}>
                             {credits} CRÉDITOS
                         </span>
@@ -408,11 +386,10 @@ export default function App() {
         </nav>
       )}
 
-      {/* History Sidebar */}
       {showHistory && (
         <div className="fixed inset-0 z-50 flex justify-end no-print">
            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowHistory(false)}></div>
-           <div className="w-full max-w-sm bg-orix-card border-l border-orix-blue/30 shadow-2xl p-6 relative overflow-y-auto animate-in slide-in-from-right duration-300">
+           <div className="w-full max-w-sm bg-orix-card border-l border-orix-blue/30 shadow-2xl p-6 relative overflow-y-auto">
               <h2 className="text-orix-cyan font-mono text-xl mb-6 flex items-center gap-2 uppercase tracking-widest border-b border-orix-blue/20 pb-4">
                  <HistoryIcon /> Logs do Sistema
               </h2>
@@ -457,14 +434,12 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-8 relative z-10 w-full">
         
-        {/* --- PAYMENT MODE --- */}
         {mode === 'payment' && (
             <PaymentGateway onPaymentSuccess={handlePaymentSuccess} />
         )}
 
-        {/* --- ONBOARDING MODE --- */}
         {mode === 'onboarding' && (
-          <div className="w-full max-w-2xl animate-in slide-in-from-bottom-5 duration-700">
+          <div className="w-full max-w-2xl">
              <div className="text-center mb-10">
                 <h2 className="text-4xl font-mono font-bold text-white mb-2">OBJETIVO</h2>
                 <p className="text-orix-silver text-sm tracking-widest uppercase">Selecione o protocolo desejado</p>
@@ -473,7 +448,7 @@ export default function App() {
              <div className="grid gap-4">
                 <button 
                   onClick={() => handleGoalSelect('Emagrecer')}
-                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:scale-105 group text-left shadow-lg"
+                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:border-orix-cyan group text-left shadow-lg"
                 >
                    <div className="w-12 h-12 bg-orix-dark rounded-full flex items-center justify-center border border-orix-cyan text-orix-cyan group-hover:text-white group-hover:bg-orix-cyan transition-colors">
                       <ScaleIcon />
@@ -486,7 +461,7 @@ export default function App() {
 
                 <button 
                   onClick={() => handleGoalSelect('Ganhar Massa')}
-                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:scale-105 group text-left shadow-lg"
+                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:border-orix-blue group text-left shadow-lg"
                 >
                    <div className="w-12 h-12 bg-orix-dark rounded-full flex items-center justify-center border border-orix-blue text-orix-blue group-hover:text-white group-hover:bg-orix-blue transition-colors">
                       <MuscleIcon />
@@ -499,7 +474,7 @@ export default function App() {
 
                 <button 
                   onClick={() => handleGoalSelect('Definir')}
-                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:scale-105 group text-left shadow-lg"
+                  className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:bg-orix-blue/20 border border-orix-blue/30 transition-all hover:border-orix-silver group text-left shadow-lg"
                 >
                    <div className="w-12 h-12 bg-orix-dark rounded-full flex items-center justify-center border border-orix-silver text-orix-silver group-hover:text-white group-hover:bg-orix-silver transition-colors">
                       <TargetIcon />
@@ -532,9 +507,8 @@ export default function App() {
           </div>
         )}
 
-        {/* --- WELCOME MODE (SCANNER) --- */}
         {mode === 'welcome' && (
-           <div className="flex flex-col items-center justify-center animate-in zoom-in-95 duration-700">
+           <div className="flex flex-col items-center justify-center">
               
               <div className="mb-12 text-center">
                  <h2 className="text-4xl md:text-5xl font-mono font-bold text-white mb-2 tracking-wider drop-shadow-lg">SCANNER</h2>
@@ -551,12 +525,12 @@ export default function App() {
                   }
               }}>
                  
-                 <div className="absolute -inset-8 rounded-full border border-orix-blue/30 border-t-transparent border-l-transparent animate-[spin_4s_linear_infinite]"></div>
-                 <div className="absolute -inset-12 rounded-full border border-orix-cyan/20 border-b-transparent border-r-transparent animate-[spin_6s_linear_infinite_reverse]"></div>
+                 <div className="absolute -inset-8 rounded-full border border-orix-blue/30 border-t-transparent border-l-transparent"></div>
+                 <div className="absolute -inset-12 rounded-full border border-orix-cyan/20 border-b-transparent border-r-transparent"></div>
                  
                  <div className="absolute inset-0 bg-orix-blue/30 rounded-full blur-2xl group-hover:bg-orix-cyan/40 transition-all duration-500"></div>
 
-                 <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full bg-orix-card border-4 border-orix-blue/50 flex items-center justify-center shadow-[0_0_40px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform duration-300 group-hover:border-orix-cyan group-active:scale-95">
+                 <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full bg-orix-card border-4 border-orix-blue/50 flex items-center justify-center shadow-[0_0_40px_rgba(59,130,246,0.3)] group-hover:border-orix-cyan transition-colors">
                     
                     <div className="absolute inset-2 rounded-full bg-gradient-to-br from-orix-dark to-black overflow-hidden flex items-center justify-center">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]"></div>
@@ -574,9 +548,8 @@ export default function App() {
            </div>
         )}
 
-        {/* --- LOADING & ANALYSIS MODES --- */}
         {(mode === 'analysis' || loading) && (
-            <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="w-full max-w-5xl">
                 {loading ? (
                     <AnalysisLoader />
                 ) : (
@@ -620,7 +593,6 @@ export default function App() {
 
       </main>
       
-      {/* Footer */}
       <footer className="w-full p-4 text-center text-orix-silver/30 font-mono text-[10px] tracking-widest z-10 no-print">
          ORIX SYSTEMS • NEURAL SCANNER V2.0
       </footer>
