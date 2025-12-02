@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORIX AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Exo 2', 'sans-serif'],
+              mono: ['Rajdhani', 'sans-serif'], // Tech/Futuristic font
+            },
+            colors: {
+              'orix-blue': '#3b82f6',    // Bright Metallic Blue
+              'orix-cyan': '#06b6d4',    // Cyan glow
+              'orix-silver': '#94a3b8',  // Metallic Grey
+              'orix-dark': '#020617',    // Deep Space Black
+              'orix-card': '#0f172a',    // Dark Slate
+            },
+            backgroundImage: {
+              'metallic-gradient': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+              'blue-glow': 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(2,6,23,0) 70%)',
+            },
+            boxShadow: {
+              'neon-blue': '0 0 20px rgba(59, 130, 246, 0.5)',
+              'neon-silver': '0 0 15px rgba(148, 163, 184, 0.3)',
+              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #020617; /* Deep Black/Blue */
+        color: #f8fafc;
+      }
+      
+      /* Custom Scrollbar */
+      .book-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .book-scroll::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      .book-scroll::-webkit-scrollbar-thumb {
+        background-color: #3b82f6;
+        border-radius: 20px;
+      }
+      
+      /* Print styles */
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printable-book, #printable-book * {
+          visibility: visible;
+          color: black !important; /* Force black text for printing */
+          background: white !important;
+        }
+        #printable-book {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          margin: 0;
+          padding: 20px;
+          background: white;
+          box-shadow: none;
+          border: none;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+
+      /* Animations */
+      @keyframes breathe {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        50% { transform: scale(1.02); box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+      }
+      .animate-breathe {
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      @keyframes ripple {
+        0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
+        70% { box-shadow: 0 0 0 25px rgba(6, 182, 212, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+      }
+      .animate-ripple {
+        animation: ripple 1.5s infinite;
+      }
+
+      .glass-panel {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+</head>
+  <body class="antialiased selection:bg-orix-blue selection:text-white">
+    <div id="root"></div>
+  </body>
+</html>

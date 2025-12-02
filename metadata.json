@@ -1,0 +1,7 @@
+{
+  "name": "NutriAI - Sua Nutricionista Inteligente",
+  "description": "Uma nutricionista virtual com inteligência artificial que cria receitas personalizadas, fala com você e gera E-books dos seus planos alimentares.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
